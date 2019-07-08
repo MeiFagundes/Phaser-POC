@@ -21,7 +21,7 @@ var game = new Phaser.Game(config);
 function preload ()
 {
     this.load.image('grass', 'assets/grass.png');
-    this.load.image('star', 'assets/star.png');
+    this.load.image('tree1', 'assets/tree1.png');
     this.load.spritesheet('mario', 
         'assets/mario.png',
         { frameWidth: 14, frameHeight: 20 }
@@ -32,12 +32,16 @@ function create ()
 {
 
     
-    this.add.image(0, 0, 'grass').setOrigin(0, 0);
-    this.add.image(400, 300, 'star');
+    let background = this.add.image(this.sys.canvas.width / 2, this.sys.canvas.height / 2, 'grass');
+    
+    let trees = this.physics.add.staticGroup();
+    trees.create(400, 300, 'tree1').setScale(0.4).refreshBody();
 
     player = this.physics.add.sprite(100, 450, 'mario').setScale(2);
 
     player.setCollideWorldBounds(true);
+
+    this.physics.add.collider(trees, player);
 
     this.anims.create({
         key: 'left',
