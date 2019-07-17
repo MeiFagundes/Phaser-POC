@@ -20,6 +20,8 @@ let gameHeight;
 let gameWidth;
 var game = new Phaser.Game(config);
 
+let keyVolUp, keyVolDown, backgroundMusic;
+
 function preload () {
     this.load.image('grass', 'assets/grass.jpg');
     this.load.image('tree', 'assets/tree1.png');
@@ -125,12 +127,27 @@ function create () {
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    let backgroundMusic = this.sound.add('main_song');
+    backgroundMusic = this.sound.add('main_song');
 
     backgroundMusic.play();
+
+    keyVolUp = this.input.keyboard.addKey('W');
+    keyVolDown = this.input.keyboard.addKey('S');
 }
 
 function update () {
+    if(Phaser.Input.Keyboard.JustDown(keyVolUp)) {
+        backgroundMusic.setVolume(backgroundMusic.volume + 0.2);
+        console.log(backgroundMusic.volume);
+    }
+
+    if(Phaser.Input.Keyboard.JustDown(keyVolDown)) {
+        backgroundMusic.setVolume(backgroundMusic.volume - 0.2);
+        if(backgroundMusic.volume < 0)
+            backgroundMusic.volume = 0;
+        console.log(backgroundMusic.volume);
+    }
+
     if (cursors.left.isDown && !cursors.right.isDown) {
         player.setVelocityX(-160);
 
