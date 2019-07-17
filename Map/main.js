@@ -127,7 +127,7 @@ function create () {
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    backgroundMusic = this.sound.add('main_song');
+    backgroundMusic = this.sound.add('main_song', {loop: true});
 
     backgroundMusic.play();
 
