@@ -20,18 +20,18 @@ let gameHeight;
 let gameWidth;
 var game = new Phaser.Game(config);
 
-function preload ()
-{
+function preload () {
     this.load.image('grass', 'assets/grass.jpg');
     this.load.image('tree', 'assets/tree1.png');
     this.load.spritesheet('mario', 
         'assets/mario.png',
         { frameWidth: 14, frameHeight: 20 }
-);
+    );
+
+    this.load.audio('main_song', 'assets/audio/song_main.ogg');
 }
 
-function create ()
-{
+function create () {
     gameHeight = this.sys.canvas.height;
     gameWidth = this.sys.canvas.width;
 
@@ -39,6 +39,7 @@ function create ()
     let background = this.add.image(gameWidth / 2, gameHeight / 2, 'grass');
     
     let trees = this.physics.add.staticGroup();
+
     let tree1 = trees.create(600, 50, 'tree').setScale(0.5).refreshBody();
     let tree2 = trees.create(500, 50, 'tree').setScale(0.5).refreshBody();
     let tree3 = trees.create(400, 50, 'tree').setScale(0.5).refreshBody();
@@ -50,7 +51,6 @@ function create ()
     let tree9 = trees.create(350, 150, 'tree').setScale(0.5).refreshBody();
     let tree10 = trees.create(250, 150, 'tree').setScale(0.5).refreshBody();
     let tree11 = trees.create(150, 150, 'tree').setScale(0.5).refreshBody();
-    
     
     tree1.body.setSize(100, 120);
     tree2.body.setSize(100, 120);
@@ -125,45 +125,47 @@ function create ()
 
     cursors = this.input.keyboard.createCursorKeys();
 
+    let backgroundMusic = this.sound.add('main_song');
 
+    backgroundMusic.play();
 }
 
-function update ()
-{
-    if (cursors.left.isDown && !cursors.right.isDown)
-    {
+function update () {
+    if (cursors.left.isDown && !cursors.right.isDown) {
         player.setVelocityX(-160);
 
         player.anims.play('left', true);
     }
-    if (cursors.right.isDown && !cursors.left.isDown)
-    {
+
+    if (cursors.right.isDown && !cursors.left.isDown) {
         player.setVelocityX(160);
 
         player.anims.play('right', true);
     }
-    if (cursors.up.isDown && !cursors.down.isDown){
+
+    if (cursors.up.isDown && !cursors.down.isDown) {
         player.setVelocityY(-160);
 
         player.anims.play('right', true);
     }
-    if (cursors.down.isDown && !cursors.up.isDown){
+
+    if (cursors.down.isDown && !cursors.up.isDown) {
         player.setVelocityY(+160);
 
         player.anims.play('left', true);
     }
-    if (!cursors.left.isDown && !cursors.right.isDown)
-    {
+
+    if (!cursors.left.isDown && !cursors.right.isDown) {
         player.setVelocityX(0);
 
     }
-    if (!cursors.down.isDown && !cursors.up.isDown)
-    {
+
+    if (!cursors.down.isDown && !cursors.up.isDown) {
         player.setVelocityY(0);
 
     }
-    if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)
-    {
+
+    if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown) {
         player.anims.play('front', true);
     }
 }
