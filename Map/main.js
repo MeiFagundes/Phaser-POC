@@ -20,7 +20,7 @@ let gameHeight;
 let gameWidth;
 var game = new Phaser.Game(config);
 
-let keyVolUp, keyVolDown, backgroundMusic;
+let keyVolUp, keyVolDown, actionKey, backgroundMusic, explosionSfx;
 
 function preload () {
     this.load.image('grass', 'assets/grass.jpg');
@@ -31,6 +31,7 @@ function preload () {
     );
 
     this.load.audio('main_song', 'assets/audio/song_main.ogg');
+    this.load.audio('sfx_bomb', 'assets/audio/sfx_bomb.ogg');
 }
 
 function create () {
@@ -39,7 +40,7 @@ function create () {
 
 
     let background = this.add.image(gameWidth / 2, gameHeight / 2, 'grass');
-    
+
     let trees = this.physics.add.staticGroup();
 
     let tree1 = trees.create(600, 50, 'tree').setScale(0.5).refreshBody();
@@ -127,18 +128,30 @@ function create () {
     cursors = this.input.keyboard.createCursorKeys();
 
     backgroundMusic = this.sound.add('main_song', {loop: true});
+    explosionSfx = this.sound.add('sfx_bomb');
 
     backgroundMusic.play();
 
     keyVolUp = this.input.keyboard.addKey('W');
     keyVolDown = this.input.keyboard.addKey('S');
+    actionKey = this.input.keyboard.addKey('E')
 
+    
 }
 
 function update () {
 
-    if(isClose(player, {x: 550, y: 150}, 11)) {
-        console.log('close');
+    if(Phaser.Input.Keyboard.JustDown(actionKey)) {
+       let closeObjects = this.physics.overlapRect(player.x - 50, player.y - 50, 300, 200, true, true);
+   
+       if(closeObjects.filter((obj) => obj.gameObject.texture.key == 'tree').length != 0) {
+           explosionSfx.play();
+       }
+    }
+
+    if(isClose(player, {x: 550, y: 150}, 11) && Phaser.Input.Keyboard.JustDown(actionKey)) {
+        console.log('Close');
+        explosionSfx.play();
     }
 
     if(Phaser.Input.Keyboard.JustDown(keyVolUp)) {
@@ -148,8 +161,10 @@ function update () {
 
     if(Phaser.Input.Keyboard.JustDown(keyVolDown)) {
         backgroundMusic.setVolume(backgroundMusic.volume - 0.2);
+
         if(backgroundMusic.volume < 0)
             backgroundMusic.volume = 0;
+
         console.log(backgroundMusic.volume);
     }
 
