@@ -37,7 +37,7 @@ function create () {
     gameHeight = this.sys.canvas.height;
     gameWidth = this.sys.canvas.width;
 
-    
+
     let background = this.add.image(gameWidth / 2, gameHeight / 2, 'grass');
     
     let trees = this.physics.add.staticGroup();
@@ -94,7 +94,6 @@ function create () {
     tree11b.body.setSize(0, -10);
 
     
-
     player.setCollideWorldBounds(true);
 
     this.physics.add.collider(trees, player);
@@ -133,9 +132,15 @@ function create () {
 
     keyVolUp = this.input.keyboard.addKey('W');
     keyVolDown = this.input.keyboard.addKey('S');
+
 }
 
 function update () {
+
+    if(isClose(player, {x: 550, y: 150}, 11)) {
+        console.log('close');
+    }
+
     if(Phaser.Input.Keyboard.JustDown(keyVolUp)) {
         backgroundMusic.setVolume(backgroundMusic.volume + 0.2);
         console.log(backgroundMusic.volume);
@@ -185,4 +190,8 @@ function update () {
     if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown) {
         player.anims.play('front', true);
     }
+}
+
+function isClose(a, b, radius) {
+    return Math.sqrt(Phaser.Math.Distance.Between(a.x, a.y, b.x, b.y)) <= radius;
 }
