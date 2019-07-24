@@ -20,25 +20,29 @@ let gameHeight;
 let gameWidth;
 var game = new Phaser.Game(config);
 
-function preload ()
-{
+let keyVolUp, keyVolDown, actionKey, backgroundMusic, explosionSfx;
+
+function preload () {
     this.load.image('grass', 'assets/grass.jpg');
     this.load.image('tree', 'assets/tree1.png');
     this.load.spritesheet('mario', 
         'assets/mario.png',
         { frameWidth: 14, frameHeight: 20 }
-);
+    );
+
+    this.load.audio('main_song', 'assets/audio/song_main.ogg');
+    this.load.audio('sfx_bomb', 'assets/audio/sfx_bomb.ogg');
 }
 
-function create ()
-{
+function create () {
     gameHeight = this.sys.canvas.height;
     gameWidth = this.sys.canvas.width;
 
-    
+
     let background = this.add.image(gameWidth / 2, gameHeight / 2, 'grass');
-    
+
     let trees = this.physics.add.staticGroup();
+
     let tree1 = trees.create(600, 50, 'tree').setScale(0.5).refreshBody();
     let tree2 = trees.create(500, 50, 'tree').setScale(0.5).refreshBody();
     let tree3 = trees.create(400, 50, 'tree').setScale(0.5).refreshBody();
@@ -50,7 +54,6 @@ function create ()
     let tree9 = trees.create(350, 150, 'tree').setScale(0.5).refreshBody();
     let tree10 = trees.create(250, 150, 'tree').setScale(0.5).refreshBody();
     let tree11 = trees.create(150, 150, 'tree').setScale(0.5).refreshBody();
-    
     
     tree1.body.setSize(100, 120);
     tree2.body.setSize(100, 120);
@@ -92,7 +95,6 @@ function create ()
     tree11b.body.setSize(0, -10);
 
     
-
     player.setCollideWorldBounds(true);
 
     this.physics.add.collider(trees, player);
@@ -125,45 +127,86 @@ function create ()
 
     cursors = this.input.keyboard.createCursorKeys();
 
+    backgroundMusic = this.sound.add('main_song', {loop: true});
+    explosionSfx = this.sound.add('sfx_bomb');
 
+    backgroundMusic.play();
+
+    keyVolUp = this.input.keyboard.addKey('W');
+    keyVolDown = this.input.keyboard.addKey('S');
+    actionKey = this.input.keyboard.addKey('E')
+
+    
 }
 
-function update ()
-{
-    if (cursors.left.isDown && !cursors.right.isDown)
-    {
+function update () {
+
+    if(Phaser.Input.Keyboard.JustDown(actionKey)) {
+       let closeObjects = this.physics.overlapRect(player.x - 50, player.y - 50, 300, 200, true, true);
+   
+       if(closeObjects.filter((obj) => obj.gameObject.texture.key == 'tree').length != 0) {
+           explosionSfx.play();
+       }
+    }
+
+    if(isClose(player, {x: 550, y: 150}, 11) && Phaser.Input.Keyboard.JustDown(actionKey)) {
+        console.log('Close');
+        explosionSfx.play();
+    }
+
+    if(Phaser.Input.Keyboard.JustDown(keyVolUp)) {
+        backgroundMusic.setVolume(backgroundMusic.volume + 0.2);
+        console.log(backgroundMusic.volume);
+    }
+
+    if(Phaser.Input.Keyboard.JustDown(keyVolDown)) {
+        backgroundMusic.setVolume(backgroundMusic.volume - 0.2);
+
+        if(backgroundMusic.volume < 0)
+            backgroundMusic.volume = 0;
+
+        console.log(backgroundMusic.volume);
+    }
+
+    if (cursors.left.isDown && !cursors.right.isDown) {
         player.setVelocityX(-160);
 
         player.anims.play('left', true);
     }
-    if (cursors.right.isDown && !cursors.left.isDown)
-    {
+
+    if (cursors.right.isDown && !cursors.left.isDown) {
         player.setVelocityX(160);
 
         player.anims.play('right', true);
     }
-    if (cursors.up.isDown && !cursors.down.isDown){
+
+    if (cursors.up.isDown && !cursors.down.isDown) {
         player.setVelocityY(-160);
 
         player.anims.play('right', true);
     }
-    if (cursors.down.isDown && !cursors.up.isDown){
+
+    if (cursors.down.isDown && !cursors.up.isDown) {
         player.setVelocityY(+160);
 
         player.anims.play('left', true);
     }
-    if (!cursors.left.isDown && !cursors.right.isDown)
-    {
+
+    if (!cursors.left.isDown && !cursors.right.isDown) {
         player.setVelocityX(0);
 
     }
-    if (!cursors.down.isDown && !cursors.up.isDown)
-    {
+
+    if (!cursors.down.isDown && !cursors.up.isDown) {
         player.setVelocityY(0);
 
     }
-    if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown)
-    {
+
+    if (!cursors.down.isDown && !cursors.up.isDown && !cursors.left.isDown && !cursors.right.isDown) {
         player.anims.play('front', true);
     }
+}
+
+function isClose(a, b, radius) {
+    return Math.sqrt(Phaser.Math.Distance.Between(a.x, a.y, b.x, b.y)) <= radius;
 }
