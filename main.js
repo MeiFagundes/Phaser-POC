@@ -16,11 +16,8 @@ var config = {
     pixelArt: true
 };
 
-let gameHeight;
-let gameWidth;
 var game = new Phaser.Game(config);
-
-let keyVolUp, keyVolDown, actionKey, backgroundMusic, explosionSfx;
+let gameHeight, gameWidth, keyVolUp, keyVolDown, actionKey, backgroundMusic, explosionSfx, keyYawMore, keyYawLess, keyRollRight, keyRollLeft, keyPitchLess, keyPitchMore;
 
 function preload () {
     this.load.image('grass', 'assets/grass.jpg');
@@ -69,7 +66,6 @@ function create () {
 
     player = this.physics.add.sprite(gameWidth / 2, gameHeight / 2, 'mario').setScale(3);
 
-
     let tree7b = trees.create(550, 450, 'tree').setScale(0.5).refreshBody();
     let tree8b = trees.create(450, 450, 'tree').setScale(0.5).refreshBody();
     let tree9b = trees.create(350, 450, 'tree').setScale(0.5).refreshBody();
@@ -94,7 +90,6 @@ function create () {
     tree10b.body.setSize(0, -10);
     tree11b.body.setSize(0, -10);
 
-    
     player.setCollideWorldBounds(true);
 
     this.physics.add.collider(trees, player);
@@ -108,7 +103,7 @@ function create () {
 
     this.anims.create({
         key: 'front',
-        frames: [ { key: 'mario', frame: 4 } ],
+        frames: [ { key: 'mario', frame: 5 } ],
         frameRate: 20
     });
 
@@ -132,14 +127,21 @@ function create () {
 
     backgroundMusic.play();
 
-    keyVolUp = this.input.keyboard.addKey('W');
-    keyVolDown = this.input.keyboard.addKey('S');
-    actionKey = this.input.keyboard.addKey('E')
-
-    
+    keyVolUp = this.input.keyboard.addKey('PLUS');
+    keyVolDown = this.input.keyboard.addKey('MINUS');
+    actionKey = this.input.keyboard.addKey('F');
+    keyYawMore = this.input.keyboard.addKey('D');
+    keyYawLess = this.input.keyboard.addKey('A');
+    keyRollRight = this.input.keyboard.addKey('E');
+    keyRollLeft = this.input.keyboard.addKey('Q');
+    keyPitchMore = this.input.keyboard.addKey('W');
+    keyPitchLess = this.input.keyboard.addKey('S');
 }
 
 function update () {
+    
+
+    // Audio
 
     if(Phaser.Input.Keyboard.JustDown(actionKey)) {
        let closeObjects = this.physics.overlapRect(player.x - 50, player.y - 50, 300, 200, true, true);
@@ -155,18 +157,104 @@ function update () {
     }
 
     if(Phaser.Input.Keyboard.JustDown(keyVolUp)) {
+
+        
         backgroundMusic.setVolume(backgroundMusic.volume + 0.2);
         console.log(backgroundMusic.volume);
     }
 
     if(Phaser.Input.Keyboard.JustDown(keyVolDown)) {
-        backgroundMusic.setVolume(backgroundMusic.volume - 0.2);
 
-        if(backgroundMusic.volume < 0)
+        if (0.2 > backgroundMusic.volume) {
             backgroundMusic.volume = 0;
+        }
+        else{
+            backgroundMusic.setVolume(backgroundMusic.volume - 0.2);
 
+            if(backgroundMusic.volume < 0)
+                backgroundMusic.volume = 0;
+        }
         console.log(backgroundMusic.volume);
     }
+
+    // Rotation
+
+    // Yaw
+
+    // Less
+    if(Phaser.Input.Keyboard.JustDown(keyYawLess)) {
+        
+        console.log("Player width: " + player.displayWidth + "px");
+        
+        
+        if (player.displayWidth <= 42 && player.displayWidth >= -42) {
+            player.displayWidth -= 10;
+        }
+        if (player.displayWidth < -42) {
+            player.displayWidth = -42;
+        }
+    }
+
+    // More
+    if(Phaser.Input.Keyboard.JustDown(keyYawMore)) {
+
+        console.log("Player width: " + player.displayWidth + "px");
+        
+        if (player.displayWidth <= 42 && player.displayWidth >= -42) {
+            player.displayWidth += 10;
+        }
+        if (player.displayWidth > 42) {
+            player.displayWidth = 42;
+        }
+    }
+
+    // Pitch
+
+    // Less
+    if(Phaser.Input.Keyboard.JustDown(keyPitchLess)) {
+
+        console.log("Player height: " + player.displayHeight + "px");
+
+        if (player.displayHeight <= 60 && player.displayHeight >= -60) {
+            player.displayHeight -= 10;
+        }
+        if (player.displayHeight < -60) {
+            player.displayHeight = -60;
+        }
+    }
+
+    // More
+    if(Phaser.Input.Keyboard.JustDown(keyPitchMore)) {
+
+        console.log("Player height: " + player.displayHeight + "px");
+        
+        if (player.displayHeight <= 60 && player.displayHeight >= -60) {
+            player.displayHeight += 10;
+        }
+        if (player.displayHeight > 60) {
+            player.displayHeight = 60;
+        }
+    }
+
+    // Roll
+
+    // Right
+    if(Phaser.Input.Keyboard.JustDown(keyRollRight)) {
+
+        console.log("Player angle: " + player.angle + "º");
+        
+        player.angle += 5;
+    }
+
+    // Left
+    if(Phaser.Input.Keyboard.JustDown(keyRollLeft)) {
+
+        console.log("Player angle: " + player.angle + "º");
+        
+        player.angle -= 5;
+    }
+
+    // Movement
 
     if (cursors.left.isDown && !cursors.right.isDown) {
         player.setVelocityX(-160);
